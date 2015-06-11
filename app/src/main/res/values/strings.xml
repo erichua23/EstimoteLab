@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">EstimoteLab</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="app_id">23lab</string>
+    <string name="app_token">fdbf92b744559cb28a9ed430e039f346</string>
+</resources>

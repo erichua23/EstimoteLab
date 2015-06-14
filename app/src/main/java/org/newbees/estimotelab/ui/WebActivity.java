@@ -4,36 +4,44 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
+import org.newbees.estimotelab.Const;
 import org.newbees.estimotelab.R;
+import org.newbees.estimotelab.model.BeaconMessage;
+import org.newbees.estimotelab.utils.PC;
 
-public class WebActivity extends Activity {
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+public class WebActivity extends BaseActivity {
+    @InjectView(R.id.mainWv)
+    WebView mainWv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_web, menu);
-        return true;
-    }
+        ButterKnife.inject(this);
+        PC.checkExtra(this);
+        BeaconMessage msg = getIntent().getExtras().getParcelable(Const.EXTRA_KEY_MSG);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        setTitle("");
+        if (getActionBar() != null) {
+            getActionBar().setHomeButtonEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        return super.onOptionsItemSelected(item);
+        mainWv.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                setTitle(mainWv.getTitle());
+            }
+        });
+        mainWv.loadUrl(msg.getMsgUrl());
     }
 }

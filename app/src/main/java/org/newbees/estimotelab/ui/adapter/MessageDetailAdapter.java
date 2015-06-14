@@ -5,8 +5,14 @@ import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVObject;
 
 import org.newbees.estimotelab.MyApplication;
 import org.newbees.estimotelab.R;
@@ -21,40 +27,17 @@ import butterknife.InjectView;
 /**
  * Created by erichua on 6/13/15.
  */
-public class MessageDetailAdapter implements ListAdapter {
+public class MessageDetailAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
     private List<BeaconMessage> allMessage;
 
     public MessageDetailAdapter(List<BeaconMessage> allMessage) {
-        inflater = (LayoutInflater) MyApplication.getInstance().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.allMessage = allMessage;
-    }
-
-    @Override
-    public boolean areAllItemsEnabled() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled(int position) {
-        return false;
-    }
-
-    @Override
-    public void registerDataSetObserver(DataSetObserver observer) {
-
-    }
-
-    @Override
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-
+        inflater = (LayoutInflater) MyApplication.getInstance().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        if (null == allMessage) {
-            return 0;
-        }
         return allMessage.size();
     }
 
@@ -74,31 +57,40 @@ public class MessageDetailAdapter implements ListAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view;
-        ViewHolder vh;
-        if (convertView != null) {
-            view = convertView;
-            vh = (ViewHolder) convertView.getTag();
+    public View getView(final int position, View view, final ViewGroup parent) {
+
+        ViewHolder holder;
+        if (view != null) {
+            holder = (ViewHolder) view.getTag();
         } else {
-            view = this.inflater.inflate(R.layout.item_message, null);
-            vh = new ViewHolder(view);
+            view = inflater.inflate(R.layout.item_message, parent, false);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
         }
-        vh.msgTitleTv.setText(getItem(position).getMsgTitle());
-        vh.msgDetailTv.setText(getItem(position).getMsgDetail());
+
+        holder.msgTitleTv.setText(getItem(position).getMsgTitle());
+        holder.msgDetailTv.setText(getItem(position).getMsgDetail());
+
+        holder.learnBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ListView) parent).performItemClick(v, position, 0);
+            }
+        });
         return view;
     }
 
-    class ViewHolder {
+    static class ViewHolder {
         @InjectView(R.id.msgTitleTv)
         TextView msgTitleTv;
 
         @InjectView(R.id.msgDetailTv)
         TextView msgDetailTv;
 
-        ViewHolder(View view){
-            ButterKnife.inject(view);
-            view.setTag(this);
+        @InjectView(R.id.learnMoreBtn)
+        Button learnBtn;
+        public ViewHolder(View view) {
+            ButterKnife.inject(this, view);
         }
     }
 
@@ -109,7 +101,7 @@ public class MessageDetailAdapter implements ListAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 0;
+        return 1;
     }
 
     @Override

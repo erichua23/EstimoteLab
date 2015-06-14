@@ -13,9 +13,7 @@ import com.avos.avoscloud.AVQuery;
 import org.newbees.estimotelab.R;
 
 
-public class ResultActivity extends Activity {
-
-    private static final int DLG_LOADING = 1;
+public class ResultActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,16 +23,4 @@ public class ResultActivity extends Activity {
         showDialog(DLG_LOADING);
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DLG_LOADING:
-                return new ProgressDialog.Builder(this)
-                        .setMessage("loading...")
-                        .create();
-            default:
-                return null;
-        }
-
-    }
 }

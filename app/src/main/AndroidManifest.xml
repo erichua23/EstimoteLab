@@ -13,20 +13,25 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".ui.MainActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.ResultActivity"
-            android:label="@string/title_activity_result" />
+            android:label="@string/title_activity_result"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.CheckInActivity"
-            android:label="@string/title_activity_check_in" />
+            android:label="@string/title_activity_check_in"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.SignInActivity"
-            android:label="@string/title_sign_in" />
+            android:label="@string/title_sign_in"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.SplashActivity"
             android:label="@string/title_activity_splash"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,8 +40,7 @@
         </activity>
         <activity
             android:name=".ui.WebActivity"
-            android:label="@string/title_activity_web" >
-        </activity>
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

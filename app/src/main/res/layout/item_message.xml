@@ -2,18 +2,37 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <org.newbees.estimotelab.ui.view.ResizableImageView
+        android:id="@+id/msgImgIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:src="@drawable/act" />
 
     <TextView
         android:id="@+id/msgTitleTv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Message Title" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/msgImgIv"
+        android:text="Message Title"
+        android:textColor="@android:color/black" />
 
     <TextView
         android:id="@+id/msgDetailTv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/msgTitleTv"
-        android:text="Message Detail" />
+        android:text="Message Detail"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/learnMoreBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/msgDetailTv"
+        android:layout_margin="0dp"
+        android:text="Learn More..." />
 </RelativeLayout>

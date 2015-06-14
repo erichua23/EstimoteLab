@@ -2,6 +2,7 @@ package org.newbees.estimotelab.ui;
 
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import org.newbees.estimotelab.MyApplication;
@@ -31,13 +32,10 @@ public class SignInActivity extends BaseActivity {
 
     @OnClick(R.id.signInBtn)
     public void onSignInBtnClicked() {
-        if ("demo".equals(usernameTv.getText().toString())
-                && "demo".equals(passwordTv.getText().toString())) {
-            MyApplication.getInstance().setCurrentUser(new UserInfo(usernameTv.getText().toString()));
+        MyApplication.getInstance().setCurrentUser(new UserInfo(usernameTv.getText().toString()));
 
-            launchActivity(MainActivity.class);
-            finish();
-            return;
-        }
+        launchActivity(MainActivity.class);
+        finish();
+        return;
     }
 }

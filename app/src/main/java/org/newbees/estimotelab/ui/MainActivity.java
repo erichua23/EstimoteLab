@@ -7,10 +7,12 @@ import android.app.TaskStackBuilder;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.media.session.MediaSession;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.avos.avoscloud.AVAnalytics;
@@ -25,11 +27,13 @@ import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
 import com.orhanobut.logger.Logger;
 
+import org.newbees.estimotelab.Const;
 import org.newbees.estimotelab.MyApplication;
 import org.newbees.estimotelab.NotifyId;
 import org.newbees.estimotelab.R;
 import org.newbees.estimotelab.RequestId;
 import org.newbees.estimotelab.model.BeaconMessage;
+import org.newbees.estimotelab.model.CheckIn;
 import org.newbees.estimotelab.ui.adapter.MessageDetailAdapter;
 
 import java.util.ArrayList;
@@ -39,13 +43,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class MainActivity extends Activity implements AdapterView.OnItemClickListener {
+public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
     private BeaconManager beaconManager = new BeaconManager(this);
     private static final Region ALL_ESTIMOTE_BEACONS = new Region("rid", null, null, null);
-
     private static final int REQUEST_ENABLE_BT = 1234;
-
     private long lastDiscovered = 0;
+    List<String> notifiedMessage = new ArrayList<>();
+    int notifyId = 0;
 
     @InjectView(R.id.mainLv)
     ListView mainLv;
@@ -64,18 +68,19 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
             return;
         }
 
-        AVQuery<BeaconMessage> query = new AVQuery<>();
+        AVQuery<BeaconMessage> query = AVObject.getQuery(BeaconMessage.class);
+        query.orderByAscending("createAt");
         query.findInBackground(new FindCallback<BeaconMessage>() {
             @Override
             public void done(List<BeaconMessage> list, AVException e) {
                 if (e != null) {
-                    Logger.d(e.fillInStackTrace().getMessage());
+                    e.printStackTrace();
                     return;
                 }
 
-                mainLv.setAdapter(new MessageDetailAdapter(list));
+                MessageDetailAdapter listAdapter = new MessageDetailAdapter(list);
+                mainLv.setAdapter(listAdapter);
                 Logger.d("list.size(): " + list.size());
-
                 mainLv.setOnItemClickListener(MainActivity.this);
             }
         });
@@ -112,12 +117,12 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                         Logger.d(b.toString());
                     }
 
-                    AVQuery<AVObject> query = new AVQuery<AVObject>("BeaconMessage");
+                    AVQuery<BeaconMessage> query = AVObject.getQuery(BeaconMessage.class);
                     query.whereContains("major", "" + bestBeacon.getMajor());
                     Logger.d("" + bestBeacon.getMajor());
-                    query.findInBackground(new FindCallback<AVObject>() {
+                    query.findInBackground(new FindCallback<BeaconMessage>() {
                         @Override
-                        public void done(List<AVObject> list, AVException e) {
+                        public void done(List<BeaconMessage> list, AVException e) {
                             if (e != null) {
                                 Logger.d(e.fillInStackTrace().getMessage());
                                 return;
@@ -126,13 +131,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                                 Logger.d("" + o.toString());
                             }
                             Logger.d("message list: " + list.size());
-                            if (list.size() > 0) {
-                                AVObject msg = list.get(0);
-                                // TODO get detail ad message
-                                String msgTitle = msg.getString("msgTitle");
-                                String msgDetail = msg.getString("msgDetail");
-
-                                postNotification(msgTitle, msgDetail);
+                            for (BeaconMessage msg: list) {
+                                postNotification(msg);
                             }
                         }
                     });
@@ -141,35 +141,40 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         });
     }
 
-    private void postNotification(String msgTitle, String msgDetail) {
+    private void postNotification(BeaconMessage message) {
+        if (notifiedMessage.contains(message.getObjectId())) {
+            return;
+        }
+        notifiedMessage.add(message.getObjectId());
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(MainActivity.this)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(msgTitle)
-                        .setContentText(msgDetail);
+                        .setContentTitle(message.getMsgTitle())
+                        .setContentText(message.getMsgDetail());
 
-        try {
-            Class cls = Class.forName("org.newbees.estimotelab.ui.CheckInActivity");
-
-            Intent resultIntent = new Intent(MainActivity.this, cls);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
-            stackBuilder.addParentStack(cls);
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            RequestId.REQ_ID_AD,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-            mBuilder.setContentIntent(resultPendingIntent);
-            mBuilder.setAutoCancel(true);
-
-
-            NotificationManager mNotificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(NotifyId.NOTIFY_AD_ID, mBuilder.build());
-        } catch (ClassNotFoundException e1) {
-            e1.printStackTrace();
+        Intent resultIntent = new Intent();
+        if ("checkIn".equals(message.getMsgType())) {
+            resultIntent.setClass(this, CheckInActivity.class);
+        } else {
+            resultIntent.setClass(this, WebActivity.class);
         }
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
+        stackBuilder.addParentStack(CheckInActivity.class);
+        resultIntent.putExtra(Const.EXTRA_KEY_MSG, message);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        RequestId.REQ_ID_AD,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setAutoCancel(true);
+
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(notifyId++, mBuilder.build());
     }
 
     @Override
@@ -213,9 +218,15 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     }
 
     @Override
-    public void onItemClick(AdapterView<MessageDetailAdapter> parent, View view, int position, long id) {
-        BeaconMessage beaconMessage = parent.getAdapter().getItem(position);
-        beaconMessage.getMsgUrl();
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        BeaconMessage msg = ((MessageDetailAdapter) parent.getAdapter()).getItem(position);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Const.EXTRA_KEY_MSG, msg);
+        if ("checkIn".equals(msg.getMsgType())) {
+            launchActivity(CheckInActivity.class, bundle);
+        } else {
+            launchActivity(WebActivity.class, bundle);
+        }
     }
 }
 

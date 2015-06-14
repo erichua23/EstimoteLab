@@ -1,4 +1,4 @@
-package org.newbees.estimotelab;
+package org.newbees.estimotelab.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -9,6 +9,8 @@ import android.view.MenuItem;
 
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
+
+import org.newbees.estimotelab.R;
 
 
 public class ResultActivity extends Activity {
@@ -21,7 +23,6 @@ public class ResultActivity extends Activity {
         setContentView(R.layout.activity_result);
 
         showDialog(DLG_LOADING);
-        AVQuery<AVObject> query = new AVQuery<>("");
     }
 
     @Override

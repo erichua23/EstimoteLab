@@ -7,4 +7,8 @@
     <string name="app_token">fdbf92b744559cb28a9ed430e039f346</string>
     <string name="title_activity_result">ResultActivity</string>
     <string name="result_activity">Result</string>
+    <string name="title_activity_check_in">CheckInActivity</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_sign_in">Sign In</string>
+    <string name="title_activity_web">WebActivity</string>
 </resources>

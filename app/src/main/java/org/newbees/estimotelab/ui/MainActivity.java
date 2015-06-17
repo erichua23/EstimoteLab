@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, List<Beacon> beaconList) {
-                if (lastDiscovered != 0 && (System.currentTimeMillis() - lastDiscovered < 20000)) {
+                if (lastDiscovered != 0 && (System.currentTimeMillis() - lastDiscovered < 5000)) {
                     return;
                 }
                 lastDiscovered = System.currentTimeMillis();

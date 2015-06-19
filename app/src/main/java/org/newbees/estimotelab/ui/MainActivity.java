@@ -62,6 +62,8 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+
         ButterKnife.inject(this);
 
         if (MyApplication.getInstance().getCurrentUser() == null) {

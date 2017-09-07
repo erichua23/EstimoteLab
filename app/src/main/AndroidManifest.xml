@@ -4,6 +4,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
+    <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION" />
 
     <application
         android:name=".MyApplication"
@@ -11,22 +16,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.MyTheme" >
-        <activity
-            android:name=".ui.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.ResultActivity"
-            android:label="@string/title_activity_result"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.CheckInActivity"
-            android:label="@string/title_activity_check_in"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.SignInActivity"
-            android:label="@string/title_sign_in"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.SplashActivity"
             android:label="@string/title_activity_splash"
@@ -40,6 +29,8 @@
         </activity>
         <activity
             android:name=".ui.WebActivity"
+            android:label="Demo"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:screenOrientation="portrait" />
     </application>
 

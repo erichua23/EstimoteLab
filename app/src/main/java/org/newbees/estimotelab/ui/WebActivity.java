@@ -1,16 +1,12 @@
 package org.newbees.estimotelab.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import org.newbees.estimotelab.Const;
 import org.newbees.estimotelab.R;
-import org.newbees.estimotelab.model.BeaconMessage;
 import org.newbees.estimotelab.utils.PC;
 
 import butterknife.ButterKnife;
@@ -27,12 +23,13 @@ public class WebActivity extends BaseActivity {
 
         ButterKnife.inject(this);
         PC.checkExtra(this);
-        BeaconMessage msg = getIntent().getExtras().getParcelable(Const.EXTRA_KEY_MSG);
+        String url = getIntent().getExtras().getString("URL");
 
         setTitle("");
         if (getActionBar() != null) {
-            getActionBar().setHomeButtonEnabled(true);
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+//            getActionBar().setHomeButtonEnabled(true);
+//            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().hide();
         }
 
         mainWv.setWebViewClient(new WebViewClient() {
@@ -42,6 +39,13 @@ public class WebActivity extends BaseActivity {
                 setTitle(mainWv.getTitle());
             }
         });
-        mainWv.loadUrl(msg.getMsgUrl());
+        mainWv.getSettings().setGeolocationEnabled(true);
+        mainWv.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mainWv.setWebChromeClient(new WebChromeClient() {
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
+        });
+        mainWv.loadUrl(url);
     }
 }

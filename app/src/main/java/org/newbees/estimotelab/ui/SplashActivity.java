@@ -4,11 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.newbees.estimotelab.MyApplication;
 import org.newbees.estimotelab.R;
-import org.newbees.estimotelab.ui.BaseActivity;
-import org.newbees.estimotelab.ui.MainActivity;
-import org.newbees.estimotelab.ui.SignInActivity;
 
 
 public class SplashActivity extends BaseActivity {
@@ -23,15 +19,10 @@ public class SplashActivity extends BaseActivity {
         mainHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (MyApplication.getInstance().getCurrentUser() == null) {
-                    launchActivity(SignInActivity.class);
-                    finish();
-                    return;
-                } else {
-                    launchActivity(MainActivity.class);
-                    finish();
-                    return;
-                }
+                Bundle bundle = new Bundle();
+                bundle.putString("URL", "http://yucezhe.com/labs/route/demo.html");
+                launchActivity(WebActivity.class, bundle);
+                finish();
             }
         }, 300);
     }
